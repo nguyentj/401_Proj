@@ -1,3 +1,4 @@
+    
 ############Load libraries#####################################################
 import cv2
 import numpy as np
@@ -7,7 +8,7 @@ from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
 
 ###############################################################################
-data_dir = './images/'
+data_dir = './images'
 para_data_dir = './images/dog/'
 un_data_dir = './images/cat/'
 ###############################################################################
@@ -35,9 +36,8 @@ def load_data():
     for label in labels:
         image_names = os.listdir(os.path.join(data_dir, label))
         for image_name in image_names:
-            #print(os.path.join(data_dir, label, image_name))
             img = cv2.imread(os.path.join(data_dir, label, image_name), cv2.IMREAD_COLOR)
-            img = np.array(img, dtype=np.uint8)
+            img = np.array(img)
             X.append(img)
             Y.append(c)
 
@@ -47,9 +47,6 @@ def load_data():
     Y = np_utils.to_categorical(Y)
     X_train, X_valid, Y_train, Y_valid = train_test_split(X,Y, test_size = test_size, shuffle = True, random_state = seed)
 
-    #np.save('imgs_train.npy', X_train, Y_train)
-    #np.save('imgs_valid.npy', X_valid, Y_valid)
-
     return X_train, X_valid, Y_train, Y_valid
 
 def load_resized_data(img_rows, img_cols):
@@ -57,5 +54,12 @@ def load_resized_data(img_rows, img_cols):
     # Resize images
     X_train = np.array([cv2.resize(img, (img_rows, img_cols)) for img in X_train])
     X_valid = np.array([cv2.resize(img, (img_rows, img_cols)) for img in X_valid])
+
+    X_train = X_train.astype(np.float32)
+    X_valid = X_valid.astype(np.float32)
+
+    # Data needs to be normalized for it to train correctly
+    X_train = np.array(X_train) / 255
+    X_valid = np.array(X_valid) / 255
 
     return X_train, X_valid, Y_train, Y_valid
