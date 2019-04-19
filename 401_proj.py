@@ -13,11 +13,8 @@ import numpy as np
 import os
 from os.path import join
 import time
-import matplotlib.pyplot as plt
 import cv2
 
-img = plt.imread(join("images", "dog", "OIF-e2bexWrojgtQnAPPcUfOWQ.jpeg"))
-plt.imshow(img)
 
 X_train, X_valid, Y_train, Y_valid = load_resized_data(100,100)
 
@@ -69,75 +66,4 @@ incorrect = y_actual[y_actual != y_pred]
 print("Test Accuracy = ", len(correct)/len(y_actual), "%")
 print("Test Inaccuracy = ", len(incorrect)/len(y_actual),"%")
 
-plt.figure(figsize=(10,10))
-for i in range(25):
-    plt.subplot(5,5, i+1)
-    plt.xticks([])
-    plt.yticks([])
-    plt.grid(False)
-    plt.imshow(X_valid[i])
-    if y_pred[i] == 0:
-        if y_pred[i] == y_actual[i]:
-            plt.xlabel("correct cat")
-        if y_pred[i] != y_actual[i]:
-            plt.xlabel("false cat")
-    else:
-        if y_pred[i] == y_actual[i]:
-            plt.xlabel("correct dog")
-        if y_pred[i] != y_actual[i]:
-            plt.xlabel("false dog")
 
-
-# Function to extract frames
-def FrameCapture(path):
-
-    # Path to video file
-    vidObj = cv2.VideoCapture(path)
-
-    # Used as counter variable
-    count = 0
-
-    # checks whether frames were extracted
-    success = 1
-
-    while success:
-
-        # vidObj object calls read
-        # function extract frames
-        success, image = vidObj.read()
-
-        # Saves the frames with frame-count
-        cv2.imwrite("./vid_img/frame%d.jpg" % count, image)
-
-        count += 1
-
-FrameCapture("dog_cat.mp4")
-
-data_dir = './vid_img'
-
-image_names = os.listdir(data_dir)
-X = []
-for image_name in image_names:
-    img = cv2.imread(os.path.join(data_dir, image_name), cv2.IMREAD_COLOR)
-    img = cv2.resize(img, (100,100))
-    img = np.array(img)
-    X.append(img)
-
-X = np.array(X)
-
-y_pred = model.predict(X, batch_size=batch_size, verbose=1)
-
-y_pred = np.argmax(y_pred, axis=1)
-
-plt.figure(figsize=(15,15))
-for i in range(81):
-    plt.subplot(9,9, i+1)
-    plt.xticks([])
-    plt.yticks([])
-    plt.grid(False)
-    plt.imshow(X[i])
-    if y_pred[i] == 0:
-        plt.xlabel("cat")
-
-    else:
-        plt.xlabel("dog")
